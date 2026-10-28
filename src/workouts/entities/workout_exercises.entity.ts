@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Workout } from './workout.entity';
+import { WorkoutSet } from './workout_sets.entity';
 
 @Entity('workout_exercises')
 export class WorkoutExercise {
@@ -27,4 +29,7 @@ export class WorkoutExercise {
   })
   @JoinColumn({ name: 'workoutId' }) // This decorator specifies the foreign key column name in the Auth entity
   workout: Workout;
+
+  @OneToMany((type) => WorkoutSet, (workoutSet) => workoutSet.workoutExercise)
+  workoutSets: WorkoutSet[];
 }
