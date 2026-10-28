@@ -16,18 +16,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post()
-  create(@Body() RegisterDto: RegisterDto) {
-    return this.authService.create(RegisterDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
+  async register(@Body() RegisterDto: RegisterDto) {
+    return await this.authService.register(RegisterDto);
   }
 
   @Patch(':id')
