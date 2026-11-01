@@ -19,14 +19,4 @@ export class AuthController {
   async login(@Body() RegisterDto: RegisterDto) {
     return await this.authService.login(RegisterDto);
   }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
-  }
 }
