@@ -11,7 +11,6 @@ import { JwtService } from '@nestjs/jwt';
 import { Auth } from './entities/auth.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { log } from 'util';
 
 @Injectable()
 export class AuthService {

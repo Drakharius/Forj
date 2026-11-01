@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { InjectRepository } from 'node_modules/@nestjs/typeorm/dist/common/typeorm.decorators';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UsersService {
@@ -21,14 +21,34 @@ export class UsersService {
   }
 
   async findOne(data: Partial<User>): Promise<User | null> {
+    if (!data) {
+      throw new NotFoundException(
+        `User with criteria ${JSON.stringify(data)} not found`,
+      );
+    }
+
     return await this.usersRepository.findOneBy(data);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    return await this.usersRepository.update(id, updateUserDto);
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    const updateUser = await this.usersRepository.update(id, updateUserDto);
+
+    return updateUser;
   }
 
   async remove(id: number) {
-    return await this.usersRepository.delete(id);
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    await this.usersRepository.delete(id);
+
+    return { message: `User with ID ${id} has been deleted` };
   }
 }
