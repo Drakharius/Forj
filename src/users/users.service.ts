@@ -12,12 +12,12 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async create(data: CreateUserDto): Promise<User> {
-    return await this.usersRepository.create(data);
+  async create(data: CreateUserDto) {
+    return await this.usersRepository.save(data);
   }
 
   async findAll() {
-    return await this.findAll();
+    return await this.usersRepository.find();
   }
 
   async findOne(data: Partial<User>): Promise<User | null> {
@@ -25,10 +25,10 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    return await this.update(id, updateUserDto);
+    return await this.usersRepository.update(id, updateUserDto);
   }
 
   async remove(id: number) {
-    return await this.remove(id);
+    return await this.usersRepository.delete(id);
   }
 }

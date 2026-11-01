@@ -11,6 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Auth } from './entities/auth.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { log } from 'util';
 
 @Injectable()
 export class AuthService {
@@ -22,10 +23,15 @@ export class AuthService {
   ) {}
 
   async register(data: RegisterDto) {
-    const user = await this.usersService.findOne({ email: data.email });
+    const userbyEmail = await this.usersService.findOne({ email: data.email });
+    const userByUsername = await this.usersService.findOne({
+      username: data.username,
+    });
 
-    if (user) {
-      throw new ConflictException('User with this email already exists');
+    if (userbyEmail || userByUsername) {
+      throw new ConflictException(
+        'User with this email or username already exists',
+      );
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -50,11 +56,14 @@ export class AuthService {
       throw new UnauthorizedException('password or username not valide');
     }
 
-    const payload = { sub: user.id, username: user.username };
+    const payload = { sub: user.id, username: user.username, role: user.role };
+    console.log('payload', payload);
+    const accessToken = this.jwtService.sign(payload);
 
-    const sessions = await this.authRepository.create({
+    const sessions = await this.authRepository.save({
       userId: user.id,
-      refreshToken: this.jwtService.sign(payload),
+      refreshToken: accessToken,
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
     return { access_token: this.jwtService.sign(payload) };
